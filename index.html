@@ -1,0 +1,991 @@
+Typingmasterpro · HTML
+Copy
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TypingMaster Pro — Type Faster. Think Smarter.</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#070a0f;--surface:#0d1117;--panel:#111820;--border:#1a2535;
+  --neon:#00f5ff;--neon2:#7c3aed;--green:#00ff88;--red:#ff4466;
+  --yellow:#ffd700;--orange:#ff6b35;--text:#b8cfe0;--muted:#3d5468;
+  --white:#eef4ff;
+  --mono:'JetBrains Mono',monospace;--ui:'Syne',sans-serif;--code:'Space Mono',monospace;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--ui);overflow-x:hidden;min-height:100vh;cursor:default}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--surface)}
+::-webkit-scrollbar-thumb{background:var(--neon2);border-radius:3px}
+ 
+/* Grid bg */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(0,245,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,0.025) 1px,transparent 1px);
+  background-size:44px 44px;
+}
+/* Scanlines */
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:9998;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);
+}
+/* Ambient glows */
+.glow-top{position:fixed;top:-250px;left:50%;transform:translateX(-50%);width:900px;height:500px;background:radial-gradient(ellipse,rgba(0,245,255,0.07) 0%,transparent 70%);pointer-events:none;z-index:0}
+.glow-bot{position:fixed;bottom:-200px;right:-100px;width:600px;height:500px;background:radial-gradient(ellipse,rgba(124,58,237,0.07) 0%,transparent 70%);pointer-events:none;z-index:0}
+ 
+/* ─── LAYOUT ─── */
+nav{
+  position:sticky;top:0;z-index:500;
+  background:rgba(7,10,15,0.88);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);padding:0 28px;height:62px;
+  display:flex;align-items:center;gap:6px;
+}
+.logo{display:flex;align-items:center;gap:10px;margin-right:auto}
+.logo-icon{
+  width:38px;height:38px;border-radius:9px;
+  background:linear-gradient(135deg,#00f5ff,#7c3aed);
+  display:flex;align-items:center;justify-content:center;font-size:1.2rem;
+  box-shadow:0 0 22px rgba(0,245,255,0.35);
+}
+.logo-text{font-weight:800;font-size:1rem;color:var(--white);letter-spacing:-0.02em}
+.logo-text span{color:var(--neon)}
+.logo-sub{font-family:var(--code);font-size:0.55rem;color:var(--muted);letter-spacing:0.12em}
+.nav-btn{
+  background:none;border:none;font-family:var(--ui);font-weight:600;
+  font-size:0.78rem;letter-spacing:0.06em;cursor:pointer;
+  padding:7px 14px;border-radius:6px;transition:all .2s;color:var(--muted);
+  text-transform:uppercase;
+}
+.nav-btn:hover{color:var(--neon)}
+.nav-btn.active{color:var(--neon);background:rgba(0,245,255,0.08)}
+.streak-pill{
+  padding:5px 12px;border-radius:6px;
+  background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.25);
+  font-family:var(--code);font-size:0.72rem;color:var(--green);
+  display:flex;align-items:center;gap:5px;margin-left:8px;
+}
+.avatar{
+  width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(135deg,var(--neon),var(--neon2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.85rem;cursor:pointer;margin-left:6px;
+  box-shadow:0 0 12px rgba(0,245,255,0.25);transition:transform .2s;
+}
+.avatar:hover{transform:scale(1.1)}
+ 
+main{position:relative;z-index:1;min-height:calc(100vh - 62px)}
+.page{display:none;animation:fadeSlide .4s ease}
+.page.active{display:block}
+ 
+@keyframes fadeSlide{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+@keyframes popIn{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes gradShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes barGrow{from{height:0}to{height:var(--h)}}
+@keyframes countUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+ 
+.wrap{max-width:1060px;margin:0 auto;padding:0 24px}
+ 
+/* ─── CARDS / UTILS ─── */
+.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;transition:border-color .3s}
+.card:hover{border-color:rgba(0,245,255,0.2)}
+.gradient-text{
+  background:linear-gradient(135deg,var(--neon),#7c3aed,var(--green));
+  background-size:200% 200%;animation:gradShift 4s ease infinite;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 10px;border-radius:999px;font-size:.72rem;
+  font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+}
+.btn{
+  border:none;font-family:var(--ui);font-weight:700;cursor:pointer;
+  border-radius:8px;transition:all .2s;letter-spacing:.04em;
+}
+.btn-primary{
+  background:linear-gradient(135deg,var(--neon),#0088ff);color:#000;
+  padding:12px 32px;font-size:.95rem;
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,245,255,0.35)}
+.btn-primary:active{transform:translateY(0)}
+.btn-ghost{
+  background:transparent;border:1px solid var(--border);color:var(--text);
+  padding:12px 32px;font-size:.95rem;
+}
+.btn-ghost:hover{border-color:var(--neon);color:var(--neon);box-shadow:0 0 16px rgba(0,245,255,0.12)}
+.progress-track{background:var(--border);border-radius:999px;overflow:hidden;height:4px}
+.progress-fill{
+  height:100%;border-radius:999px;
+  background:linear-gradient(90deg,var(--neon),var(--green));
+  box-shadow:0 0 8px var(--neon);transition:width .4s ease;
+}
+.mode-pill{
+  padding:6px 16px;border-radius:999px;font-size:.78rem;font-weight:700;
+  letter-spacing:.05em;border:1px solid var(--border);background:transparent;
+  color:var(--muted);cursor:pointer;transition:all .2s;font-family:var(--ui);
+}
+.mode-pill.on{background:var(--neon);border-color:var(--neon);color:#000;box-shadow:0 0 18px rgba(0,245,255,0.28)}
+.stat-box{flex:1;padding:18px 20px;text-align:center}
+.stat-val{font-family:var(--code);font-weight:700;line-height:1}
+.stat-lbl{font-family:var(--ui);font-size:.7rem;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.08em}
+footer{border-top:1px solid var(--border);padding:20px 24px;text-align:center;font-family:var(--code);font-size:.68rem;color:var(--muted);letter-spacing:.06em;position:relative;z-index:1}
+ 
+/* ─── HOME ─── */
+.hero{padding:80px 0 56px;text-align:center}
+.live-pill{
+  display:inline-flex;align-items:center;gap:8px;padding:6px 18px;border-radius:999px;
+  background:rgba(0,245,255,0.07);border:1px solid rgba(0,245,255,0.18);margin-bottom:26px;
+  font-family:var(--code);font-size:.72rem;color:var(--neon);letter-spacing:.1em;
+}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 9px var(--green);animation:pulse 2s infinite}
+h1.hero-title{
+  font-weight:800;font-size:clamp(2.4rem,5.5vw,4.6rem);color:var(--white);
+  line-height:1.1;margin-bottom:18px;letter-spacing:-.03em;
+}
+.hero-sub{font-size:1.05rem;color:var(--muted);max-width:500px;margin:0 auto 36px;line-height:1.75}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.terminal-demo{
+  max-width:680px;margin:0 auto 56px;padding:28px 32px;
+  background:var(--surface);border:1px solid rgba(0,245,255,0.18);
+  border-radius:14px;box-shadow:0 0 60px rgba(0,245,255,0.05);position:relative;
+}
+.term-dots{display:flex;gap:7px;margin-bottom:18px}
+.term-dot{width:12px;height:12px;border-radius:50%}
+.term-text{font-family:var(--mono);font-size:1.05rem;line-height:1.9;letter-spacing:.04em;min-height:40px}
+.term-stats{margin-top:18px;display:flex;gap:28px}
+.term-stat{font-family:var(--code)}
+.term-stat .ts-lbl{font-size:.62rem;color:var(--muted);margin-bottom:2px}
+.term-stat .ts-val{font-size:1rem;font-weight:700}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:56px}
+.stat-card{padding:24px;text-align:center}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:56px}
+.feat-card{padding:24px;cursor:default;transition:all .3s;position:relative;overflow:hidden}
+.feat-card::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 60%,rgba(0,245,255,0.03));opacity:0;transition:opacity .3s}
+.feat-card:hover{transform:translateY(-4px);border-color:rgba(0,245,255,0.35)}
+.feat-card:hover::after{opacity:1}
+.feat-icon{font-size:1.9rem;margin-bottom:12px}
+.feat-title{font-weight:700;margin-bottom:7px;font-size:.95rem}
+.feat-desc{font-size:.83rem;color:var(--muted);line-height:1.65}
+ 
+/* ─── TEST ─── */
+#page-test{padding:36px 0 60px}
+.test-header{margin-bottom:28px}
+.test-header h2{font-weight:800;font-size:1.7rem;color:var(--white);margin-bottom:4px}
+.test-header p{color:var(--muted);font-size:.88rem}
+.controls-row{display:flex;gap:20px;align-items:center;margin-bottom:22px;flex-wrap:wrap}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.timer-bar-wrap{margin-bottom:6px}
+.char-bar-wrap{margin-bottom:18px}
+.typing-area{
+  padding:28px 32px;cursor:text;position:relative;margin-bottom:0;
+  transition:border-color .3s,box-shadow .3s;
+}
+.typing-area.active{border-color:rgba(0,245,255,0.28);box-shadow:0 0 40px rgba(0,245,255,0.04)}
+.typing-area.shake{animation:shake .3s ease}
+.ta-overlay{
+  position:absolute;inset:0;border-radius:12px;
+  background:rgba(7,10,15,0.75);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;z-index:10;
+  backdrop-filter:blur(2px);transition:opacity .3s;
+}
+.ta-overlay.hidden{opacity:0;pointer-events:none}
+.ta-overlay span:first-child{font-size:2rem}
+.ta-overlay span:last-child{font-family:var(--ui);color:var(--muted);font-size:.88rem}
+#type-display{font-family:var(--mono);font-size:1.18rem;line-height:2;letter-spacing:.05em;user-select:none;word-break:break-word}
+.c-pending{color:var(--muted)}
+.c-correct{color:var(--green)}
+.c-wrong{color:var(--red);background:rgba(255,68,102,0.13);border-radius:2px}
+.c-cursor{color:var(--white);border-bottom:2.5px solid var(--neon);animation:blink .8s step-end infinite}
+#hidden-input{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
+.result-panel{
+  padding:40px;text-align:center;
+  background:linear-gradient(135deg,var(--panel),rgba(0,245,255,0.04));
+  border-color:rgba(0,245,255,0.28);
+  box-shadow:0 0 60px rgba(0,245,255,0.08);
+  animation:popIn .4s ease;
+}
+.result-emoji{font-size:3rem;margin-bottom:10px}
+.result-title{font-weight:800;font-size:1.4rem;color:var(--white);margin-bottom:24px}
+.result-stats{display:flex;justify-content:center;gap:44px;margin-bottom:32px}
+.rs-val{font-family:var(--code);font-size:3rem;font-weight:700;line-height:1}
+.rs-lbl{font-family:var(--code);font-size:.65rem;color:var(--muted);margin-top:4px}
+.keyboard-card{padding:22px;margin-top:18px}
+.kbd-legend{font-family:var(--code);font-size:.68rem;color:var(--muted);margin-bottom:14px;letter-spacing:.1em}
+.kbd-rows{display:flex;flex-direction:column;gap:5px;align-items:center}
+.kbd-row{display:flex;gap:5px}
+.key{
+  display:flex;align-items:center;justify-content:center;
+  width:34px;height:34px;border-radius:6px;font-family:var(--code);
+  font-size:.68rem;font-weight:700;border:1px solid var(--border);
+  background:var(--surface);color:var(--muted);transition:all .15s;
+}
+.key.home{border-color:rgba(124,58,237,0.45);background:rgba(124,58,237,0.07)}
+.key.active-key{background:rgba(0,245,255,0.15);border-color:var(--neon);color:var(--neon);box-shadow:0 0 12px rgba(0,245,255,0.28)}
+.key.err-key{background:rgba(255,68,102,0.13);border-color:var(--red);color:var(--red)}
+ 
+/* ─── LESSONS ─── */
+#page-lessons{padding:36px 0 60px}
+.xp-bar-card{padding:20px;margin-bottom:28px;display:flex;gap:18px;align-items:center}
+.xp-icon{font-size:2rem}
+.xp-info{flex:1}
+.xp-top{display:flex;justify-content:space-between;margin-bottom:8px}
+.xp-name{font-weight:700;color:var(--white)}
+.xp-pts{font-family:var(--code);font-size:.78rem;color:var(--neon)}
+.lessons-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.lesson-card{padding:22px;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
+.lesson-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 60%,rgba(0,245,255,0.04));opacity:0;transition:opacity .3s}
+.lesson-card:hover:not(.locked){transform:translateY(-4px);border-color:rgba(0,245,255,0.38)}
+.lesson-card:hover:not(.locked)::before{opacity:1}
+.lesson-card.locked{opacity:.45;cursor:not-allowed}
+.lc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.lc-icon{font-size:1.9rem}
+.lc-title{font-weight:700;color:var(--white);margin-bottom:4px}
+.lc-keys{font-family:var(--code);font-size:.73rem;color:var(--muted);margin-bottom:12px}
+.lc-bottom{display:flex;justify-content:space-between;align-items:center}
+ 
+/* ─── DASHBOARD ─── */
+#page-dashboard{padding:36px 0 60px}
+.dash-top-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.dash-mid{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:18px}
+.dash-bot{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+.chart-area{padding:22px}
+.chart-bars{display:flex;align-items:flex-end;gap:8px;height:90px;margin-top:14px}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px}
+.bar{
+  width:100%;background:linear-gradient(180deg,var(--neon),#0066cc);
+  border-radius:4px 4px 0 0;min-height:4px;
+  transition:height .8s cubic-bezier(.34,1.56,.64,1);position:relative;cursor:default;
+}
+.bar:hover::after{
+  content:attr(data-v);position:absolute;bottom:calc(100% + 4px);left:50%;
+  transform:translateX(-50%);background:var(--neon);color:#000;
+  font-size:.65rem;font-weight:700;padding:2px 6px;border-radius:4px;white-space:nowrap;
+  font-family:var(--code);
+}
+.bar-lbl{font-family:var(--code);font-size:.58rem;color:var(--muted)}
+.ring-card{padding:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.ring-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;width:140px;height:140px}
+.ring-inner{position:absolute;text-align:center}
+.ring-wpm{font-family:var(--code);font-size:1.7rem;font-weight:700;line-height:1}
+.ring-sub{font-family:var(--code);font-size:.62rem;color:var(--muted)}
+.badge-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.badge-item{
+  text-align:center;padding:12px 6px;border-radius:8px;border:1px solid;
+  transition:all .2s;
+}
+.badge-item.earned{background:rgba(0,245,255,0.05);border-color:rgba(0,245,255,0.18)}
+.badge-item.locked-b{opacity:.3;border-color:var(--border)}
+.badge-item .bi-icon{font-size:1.5rem;margin-bottom:4px}
+.badge-item .bi-name{font-weight:700;font-size:.72rem;color:var(--white)}
+.hmap-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.hmap-row:last-child{border-bottom:none}
+.hmap-key{width:30px;height:30px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-family:var(--code);font-size:.75rem;font-weight:700;background:rgba(255,68,102,.14);border:1px solid var(--red);color:var(--red)}
+.hmap-track{flex:1;height:7px;background:var(--border);border-radius:4px;overflow:hidden}
+.hmap-fill{height:100%;border-radius:4px;transition:width 1s ease}
+.hmap-pct{font-family:var(--code);font-size:.68rem;color:var(--muted);width:30px;text-align:right}
+.sessions-card{padding:22px;margin-top:0}
+.session-row{display:flex;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);gap:14px}
+.session-row:last-child{border-bottom:none}
+.sr-date{font-family:var(--code);font-size:.72rem;color:var(--muted);width:110px}
+.sr-stats{display:flex;gap:20px;margin-left:auto}
+.sr-wpm{font-family:var(--code);font-weight:700;color:var(--neon)}
+.sr-acc{font-family:var(--code);color:var(--green)}
+.sr-time{font-family:var(--code);color:var(--muted)}
+ 
+/* ─── LEADERBOARD ─── */
+#page-leaderboard{padding:36px 0 60px}
+.podium{display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:12px;margin-bottom:22px;align-items:flex-end}
+.podium-card{padding:20px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.podium-medal{font-size:1.8rem}
+.podium-name{font-weight:700;font-size:.85rem;color:var(--white)}
+.podium-wpm{font-family:var(--code);font-size:1.5rem;font-weight:700;line-height:1}
+.podium-sub{font-family:var(--code);font-size:.6rem;color:var(--muted)}
+.lb-card{overflow:hidden}
+.lb-row{
+  display:flex;align-items:center;padding:12px 20px;
+  border-bottom:1px solid var(--border);transition:background .2s;gap:12px;
+}
+.lb-row:hover{background:rgba(0,245,255,0.04)}
+.lb-row:last-child{border-bottom:none}
+.lb-row.me{background:rgba(0,245,255,0.04);border-left:3px solid var(--neon)}
+.lb-rank{width:30px;font-family:var(--code);font-weight:700;font-size:.88rem}
+.lb-country{font-size:1rem}
+.lb-name{flex:1;font-weight:700;font-size:.88rem;color:var(--white)}
+.lb-wpm{font-family:var(--code);font-weight:700;color:var(--neon);min-width:60px;text-align:right}
+.lb-acc{font-family:var(--code);color:var(--green);min-width:50px;text-align:right}
+ 
+/* ─── PROFILE ─── */
+#page-profile{padding:36px 0 60px}
+.profile-hero{
+  padding:28px;margin-bottom:18px;display:flex;gap:22px;align-items:center;
+  background:linear-gradient(135deg,var(--panel),rgba(124,58,237,0.07));
+  border-color:rgba(124,58,237,0.28);
+}
+.profile-ava{
+  width:80px;height:80px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--neon),var(--neon2));
+  display:flex;align-items:center;justify-content:center;font-size:2rem;
+  box-shadow:0 0 28px rgba(0,245,255,0.28);
+}
+.profile-info{flex:1}
+.profile-name{font-weight:800;font-size:1.35rem;color:var(--white);margin-bottom:4px}
+.profile-since{font-family:var(--code);font-size:.75rem;color:var(--muted);margin-bottom:10px}
+.profile-badges{display:flex;gap:7px;flex-wrap:wrap}
+.profile-xp{text-align:right}
+.pxp-val{font-family:var(--code);font-size:2rem;font-weight:700;color:var(--yellow)}
+.pxp-lbl{font-family:var(--code);font-size:.62rem;color:var(--muted)}
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.pstat-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.pstat-row:last-child{border-bottom:none}
+.pstat-lbl{font-size:.84rem;color:var(--muted)}
+.pstat-val{font-family:var(--code);font-weight:700}
+.pbadge-item{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;border:1px solid;
+}
+.pbadge-item.earned{background:rgba(0,245,255,0.04);border-color:rgba(0,245,255,0.14)}
+.pbadge-item.locked-b{opacity:.32;border-color:var(--border)}
+.pbadge-icon{font-size:1.35rem}
+.pbadge-name{font-weight:700;font-size:.82rem;color:var(--white)}
+.pbadge-desc{font-size:.72rem;color:var(--muted)}
+.pbadge-check{margin-left:auto;color:var(--green);font-size:.8rem}
+</style>
+</head>
+<body>
+<div class="glow-top"></div>
+<div class="glow-bot"></div>
+ 
+<!-- NAV -->
+<nav>
+  <div class="logo">
+    <div class="logo-icon">⌨️</div>
+    <div>
+      <div class="logo-text">Typing<span>Master</span></div>
+      <div class="logo-sub">PRO</div>
+    </div>
+  </div>
+  <button class="nav-btn active" onclick="showPage('home',this)">Home</button>
+  <button class="nav-btn" onclick="showPage('test',this)">Test</button>
+  <button class="nav-btn" onclick="showPage('lessons',this)">Lessons</button>
+  <button class="nav-btn" onclick="showPage('dashboard',this)">Dashboard</button>
+  <button class="nav-btn" onclick="showPage('leaderboard',this)">Leaderboard</button>
+  <button class="nav-btn" onclick="showPage('profile',this)">Profile</button>
+  <div class="streak-pill">🔥 12</div>
+  <div class="avatar" onclick="showPage('profile',document.querySelector('.nav-btn:last-of-type'))">👤</div>
+</nav>
+ 
+<main>
+ 
+<!-- ═══════════════ HOME ═══════════════ -->
+<div id="page-home" class="page active">
+<div class="wrap">
+  <div class="hero">
+    <div class="live-pill"><div class="live-dot"></div>AI-POWERED TYPING PLATFORM</div>
+    <h1 class="hero-title">Type Faster.<br><span class="gradient-text">Think Smarter.</span></h1>
+    <p class="hero-sub">From 0 to 100+ WPM with AI-powered lessons, real-time feedback, and competitive challenges designed for every level.</p>
+    <div class="hero-btns">
+      <button class="btn btn-primary" onclick="showPage('test',document.querySelectorAll('.nav-btn')[1])">Start Typing Test →</button>
+      <button class="btn btn-ghost" onclick="showPage('lessons',document.querySelectorAll('.nav-btn')[2])">View Lessons</button>
+    </div>
+  </div>
+ 
+  <!-- Terminal Demo -->
+  <div class="terminal-demo">
+    <div class="term-dots">
+      <div class="term-dot" style="background:#ff5f57"></div>
+      <div class="term-dot" style="background:#febc2e"></div>
+      <div class="term-dot" style="background:#28c840"></div>
+      <span style="font-family:var(--code);font-size:.68rem;color:var(--muted);margin-left:8px">typing_test.exe — running</span>
+    </div>
+    <div class="term-text" id="demo-text"></div>
+    <div class="term-stats">
+      <div class="term-stat"><div class="ts-lbl">WPM</div><div class="ts-val" id="demo-wpm" style="color:var(--neon)">72</div></div>
+      <div class="term-stat"><div class="ts-lbl">ACCURACY</div><div class="ts-val" id="demo-acc" style="color:var(--green)">98%</div></div>
+      <div class="term-stat"><div class="ts-lbl">TIME</div><div class="ts-val" id="demo-time" style="color:var(--yellow)">30s</div></div>
+      <div class="term-stat"><div class="ts-lbl">XP</div><div class="ts-val" style="color:var(--neon2)">+144</div></div>
+    </div>
+  </div>
+ 
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="card stat-card"><div class="stat-val" style="font-size:2rem;color:var(--neon)">50K+</div><div class="stat-lbl">Active Typists</div></div>
+    <div class="card stat-card"><div class="stat-val" style="font-size:2rem;color:var(--green)">100M+</div><div class="stat-lbl">Words Typed</div></div>
+    <div class="card stat-card"><div class="stat-val" style="font-size:2rem;color:var(--yellow)">147</div><div class="stat-lbl">Top WPM Record</div></div>
+    <div class="card stat-card"><div class="stat-val" style="font-size:2rem;color:var(--neon2)">99.9%</div><div class="stat-lbl">Uptime</div></div>
+  </div>
+ 
+  <!-- Features -->
+  <h2 style="font-weight:800;font-size:1.7rem;color:var(--white);text-align:center;margin-bottom:8px">Everything You Need</h2>
+  <p style="color:var(--muted);text-align:center;margin-bottom:28px;font-size:.9rem">A complete ecosystem for typing mastery</p>
+  <div class="feat-grid">
+    <div class="card feat-card"><div class="feat-icon">⚡</div><div class="feat-title" style="color:var(--yellow)">Real-Time WPM</div><div class="feat-desc">Live speed tracking with millisecond precision as you type every character.</div></div>
+    <div class="card feat-card"><div class="feat-icon">🧠</div><div class="feat-title" style="color:var(--neon)">AI-Powered</div><div class="feat-desc">Adaptive lessons that detect your weak spots and automatically adjust difficulty.</div></div>
+    <div class="card feat-card"><div class="feat-icon">🎮</div><div class="feat-title" style="color:var(--green)">Gamified</div><div class="feat-desc">XP, badges, streaks & leaderboards to keep you motivated every single day.</div></div>
+    <div class="card feat-card"><div class="feat-icon">📊</div><div class="feat-title" style="color:var(--neon2)">Deep Analytics</div><div class="feat-desc">Error heatmaps, WPM trends, weak key detection, and performance predictions.</div></div>
+    <div class="card feat-card"><div class="feat-icon">🌍</div><div class="feat-title" style="color:var(--orange)">Multiplayer</div><div class="feat-desc">Live battles and global tournaments against typists from around the world.</div></div>
+    <div class="card feat-card"><div class="feat-icon">💻</div><div class="feat-title" style="color:var(--red)">Code Typing</div><div class="feat-desc">Specialized mode for developers — type code at lightning speed with symbols.</div></div>
+  </div>
+ 
+  <!-- Learning path preview -->
+  <h2 style="font-weight:800;font-size:1.7rem;color:var(--white);text-align:center;margin-bottom:8px">Your Journey</h2>
+  <p style="color:var(--muted);text-align:center;margin-bottom:28px;font-size:.9rem">Structured levels from zero to legend</p>
+  <div style="display:flex;gap:0;margin-bottom:60px;overflow-x:auto;padding-bottom:8px">
+    <div style="display:flex;gap:12px;min-width:max-content">
+    ${[
+      {l:"🟢 Beginner",d:"Home row keys, basic words, slow practice",c:"var(--green)"},
+      {l:"🟡 Intermediate",d:"Sentences, punctuation, speed drills",c:"var(--yellow)"},
+      {l:"🔴 Advanced",d:"Paragraphs, code typing, error correction",c:"var(--red)"},
+      {l:"🏆 Pro",d:"Competitions, blind typing, 100+ WPM",c:"var(--neon)"},
+    ].map(x=>`<div class="card" style="padding:20px 24px;min-width:200px;border-top:3px solid ${x.c}"><div style="font-weight:700;margin-bottom:7px;color:${x.c}">${x.l}</div><div style="font-size:.8rem;color:var(--muted);line-height:1.6">${x.d}</div></div>`).join('')}
+    </div>
+  </div>
+</div>
+</div>
+ 
+<!-- ═══════════════ TEST ═══════════════ -->
+<div id="page-test" class="page">
+<div class="wrap">
+  <div class="test-header">
+    <h2>Typing Test</h2>
+    <p>Click the area below and start typing to begin</p>
+  </div>
+  <div class="controls-row">
+    <div style="display:flex;gap:6px" id="mode-pills">
+      <button class="mode-pill on" onclick="setMode('beginner',this)">Beginner</button>
+      <button class="mode-pill" onclick="setMode('intermediate',this)">Intermediate</button>
+      <button class="mode-pill" onclick="setMode('advanced',this)">Advanced</button>
+      <button class="mode-pill" onclick="setMode('code',this)">Code</button>
+    </div>
+    <div style="display:flex;gap:6px" id="time-pills">
+      <button class="mode-pill" onclick="setDuration(15,this)">15s</button>
+      <button class="mode-pill on" onclick="setDuration(30,this)">30s</button>
+      <button class="mode-pill" onclick="setDuration(60,this)">60s</button>
+      <button class="mode-pill" onclick="setDuration(120,this)">120s</button>
+    </div>
+  </div>
+  <div class="stats-row">
+    <div class="card stat-box"><div class="stat-val" id="t-wpm" style="font-size:2rem;color:var(--neon)">0</div><div class="stat-lbl">WPM</div></div>
+    <div class="card stat-box"><div class="stat-val" id="t-acc" style="font-size:2rem;color:var(--green)">100<span style="font-size:.85rem;color:var(--muted)">%</span></div><div class="stat-lbl">Accuracy</div></div>
+    <div class="card stat-box"><div class="stat-val" id="t-time" style="font-size:2rem;color:var(--yellow)">30<span style="font-size:.85rem;color:var(--muted)">s</span></div><div class="stat-lbl">Time Left</div></div>
+    <div class="card stat-box"><div class="stat-val" id="t-prog" style="font-size:2rem;color:var(--neon2)">0<span style="font-size:.85rem;color:var(--muted)">%</span></div><div class="stat-lbl">Progress</div></div>
+  </div>
+  <div class="timer-bar-wrap progress-track"><div class="progress-fill" id="timer-bar" style="width:100%;background:linear-gradient(90deg,var(--neon),var(--green))"></div></div>
+  <div class="char-bar-wrap progress-track" style="margin-top:5px"><div class="progress-fill" id="char-bar" style="width:0%"></div></div>
+ 
+  <div class="card typing-area active" id="typing-card" onclick="document.getElementById('hidden-input').focus()">
+    <div class="ta-overlay" id="ta-overlay">
+      <span>⌨️</span><span>Click here and start typing to begin your test</span>
+    </div>
+    <div id="type-display"></div>
+    <input type="text" id="hidden-input" class="" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+  </div>
+ 
+  <div class="card result-panel" id="result-panel" style="display:none;margin-top:18px">
+    <div class="result-emoji" id="r-emoji">⚡</div>
+    <div class="result-title">Test Complete!</div>
+    <div class="result-stats">
+      <div><div class="rs-val" id="r-wpm" style="color:var(--neon)">0</div><div class="rs-lbl">WPM</div></div>
+      <div><div class="rs-val" id="r-acc" style="color:var(--green)">0%</div><div class="rs-lbl">ACCURACY</div></div>
+      <div><div class="rs-val" id="r-xp" style="color:var(--yellow)">+0</div><div class="rs-lbl">XP GAINED</div></div>
+    </div>
+    <button class="btn btn-primary" onclick="resetTest()">Try Again ↺</button>
+  </div>
+ 
+  <div class="card keyboard-card" id="keyboard-card">
+    <div class="kbd-legend">KEYBOARD TRACKER — <span style="color:var(--neon2)">■</span> HOME ROW KEYS</div>
+    <div class="kbd-rows" id="kbd-rows"></div>
+  </div>
+</div>
+</div>
+ 
+<!-- ═══════════════ LESSONS ═══════════════ -->
+<div id="page-lessons" class="page">
+<div class="wrap">
+  <h2 style="font-weight:800;font-size:1.7rem;color:var(--white);margin-bottom:4px">Learning Path</h2>
+  <p style="color:var(--muted);font-size:.88rem;margin-bottom:28px">Structured journey from beginner to legend</p>
+ 
+  <div class="card xp-bar-card">
+    <div class="xp-icon">⚡</div>
+    <div class="xp-info">
+      <div class="xp-top"><span class="xp-name">Level 12 — Intermediate</span><span class="xp-pts">2,340 / 3,000 XP</span></div>
+      <div class="progress-track"><div class="progress-fill" style="width:78%"></div></div>
+    </div>
+  </div>
+ 
+  <div class="lessons-grid" id="lessons-grid"></div>
+</div>
+</div>
+ 
+<!-- ═══════════════ DASHBOARD ═══════════════ -->
+<div id="page-dashboard" class="page">
+<div class="wrap">
+  <h2 style="font-weight:800;font-size:1.7rem;color:var(--white);margin-bottom:4px">Dashboard</h2>
+  <p style="color:var(--muted);font-size:.88rem;margin-bottom:28px">Your performance analytics</p>
+ 
+  <div class="dash-top-stats">
+    <div class="card stat-box"><div class="stat-val" style="font-size:2rem;color:var(--neon)">92</div><div class="stat-lbl">Best WPM</div></div>
+    <div class="card stat-box"><div class="stat-val" style="font-size:2rem;color:var(--green)">96<span style="font-size:.85rem;color:var(--muted)">%</span></div><div class="stat-lbl">Avg Accuracy</div></div>
+    <div class="card stat-box"><div class="stat-val" style="font-size:2rem;color:var(--yellow)">47</div><div class="stat-lbl">Tests Done</div></div>
+    <div class="card stat-box"><div class="stat-val" style="font-size:2rem;color:var(--red)">12</div><div class="stat-lbl">Day Streak 🔥</div></div>
+  </div>
+ 
+  <div class="dash-mid">
+    <div class="card chart-area">
+      <div style="font-weight:700;color:var(--white);margin-bottom:3px">Weekly WPM Progress</div>
+      <div style="font-family:var(--code);font-size:.68rem;color:var(--muted)">Last 7 days</div>
+      <div class="chart-bars" id="week-chart"></div>
+    </div>
+    <div class="card ring-card">
+      <div style="font-weight:700;color:var(--white)">Current Level</div>
+      <div class="ring-wrap">
+        <svg width="140" height="140" style="transform:rotate(-90deg)">
+          <circle cx="70" cy="70" r="54" fill="none" stroke="var(--border)" stroke-width="8"/>
+          <circle cx="70" cy="70" r="54" fill="none" stroke="var(--neon)" stroke-width="8"
+            stroke-dasharray="239.4 338.2" stroke-linecap="round"
+            style="filter:drop-shadow(0 0 8px var(--neon));transition:stroke-dasharray .6s ease"/>
+        </svg>
+        <div class="ring-inner">
+          <div class="ring-wpm" style="color:var(--neon)">72</div>
+          <div class="ring-sub">WPM</div>
+        </div>
+      </div>
+      <div style="text-align:center;width:100%">
+        <div style="font-family:var(--code);font-size:.7rem;color:var(--muted);margin-bottom:6px">Target: 100 WPM</div>
+        <div class="progress-track"><div class="progress-fill" style="width:72%"></div></div>
+      </div>
+    </div>
+  </div>
+ 
+  <div class="dash-bot">
+    <div class="card" style="padding:22px">
+      <div style="font-weight:700;color:var(--white);margin-bottom:18px">Achievements</div>
+      <div class="badge-grid" id="badge-grid"></div>
+    </div>
+    <div class="card" style="padding:22px">
+      <div style="font-weight:700;color:var(--white);margin-bottom:4px">Error Heatmap</div>
+      <div style="font-family:var(--code);font-size:.68rem;color:var(--muted);margin-bottom:14px">Keys you struggle with most</div>
+      <div id="heatmap"></div>
+    </div>
+  </div>
+ 
+  <div class="card sessions-card">
+    <div style="font-weight:700;color:var(--white);margin-bottom:16px">Recent Sessions</div>
+    <div id="sessions-list"></div>
+  </div>
+</div>
+</div>
+ 
+<!-- ═══════════════ LEADERBOARD ═══════════════ -->
+<div id="page-leaderboard" class="page">
+<div class="wrap">
+  <h2 style="font-weight:800;font-size:1.7rem;color:var(--white);margin-bottom:4px">Leaderboard</h2>
+  <p style="color:var(--muted);font-size:.88rem;margin-bottom:22px">Compete with typists worldwide</p>
+  <div style="display:flex;gap:6px;margin-bottom:22px">
+    <button class="mode-pill on">Global</button>
+    <button class="mode-pill" onclick="this.parentNode.querySelectorAll('.mode-pill').forEach(b=>b.classList.remove('on'));this.classList.add('on')">Weekly</button>
+    <button class="mode-pill" onclick="this.parentNode.querySelectorAll('.mode-pill').forEach(b=>b.classList.remove('on'));this.classList.add('on')">Friends</button>
+  </div>
+  <div class="podium" id="podium"></div>
+  <div class="card lb-card" id="lb-list"></div>
+</div>
+</div>
+ 
+<!-- ═══════════════ PROFILE ═══════════════ -->
+<div id="page-profile" class="page">
+<div class="wrap">
+  <div class="card profile-hero">
+    <div class="profile-ava">👤</div>
+    <div class="profile-info">
+      <div class="profile-name">TyperPro_User</div>
+      <div class="profile-since">Member since Jan 2024 • Level 12</div>
+      <div class="profile-badges">
+        <span class="badge" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)">⚡ Intermediate</span>
+        <span class="badge" style="background:rgba(255,215,0,.1);color:var(--yellow);border:1px solid rgba(255,215,0,.3)">🔥 12-day streak</span>
+        <span class="badge" style="background:rgba(0,245,255,.1);color:var(--neon);border:1px solid rgba(0,245,255,.3)">🎯 Top 10%</span>
+      </div>
+    </div>
+    <div class="profile-xp">
+      <div class="pxp-val">2,340</div>
+      <div class="pxp-lbl">TOTAL XP</div>
+    </div>
+  </div>
+  <div class="profile-grid">
+    <div class="card" style="padding:22px">
+      <div style="font-weight:700;color:var(--white);margin-bottom:16px">All-Time Stats</div>
+      <div id="profile-stats"></div>
+    </div>
+    <div class="card" style="padding:22px">
+      <div style="font-weight:700;color:var(--white);margin-bottom:14px">Badges & Achievements</div>
+      <div style="display:flex;flex-direction:column;gap:8px" id="profile-badges"></div>
+    </div>
+  </div>
+</div>
+</div>
+ 
+</main>
+ 
+<footer>
+  ⌨️ TYPINGMASTER PRO &nbsp;—&nbsp; <span style="color:var(--neon)">BUILT FOR SPEED</span> &nbsp;—&nbsp; © 2025 &nbsp;|&nbsp; AI-POWERED TYPING ECOSYSTEM
+</footer>
+ 
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────
+const TEXTS={
+  beginner:["the cat sat on the mat and the dog ran far away from home","a big red fox can jump over the old brown log near the hill","she sells sea shells by the sea shore every single summer day"],
+  intermediate:["Practice makes perfect and every keystroke counts when building typing speed and skill.","The quick brown fox jumps over the lazy dog with great precision and accuracy.","Consistent daily practice will dramatically improve your typing speed over time."],
+  advanced:["Mastering touch typing requires developing muscle memory through deliberate and focused practice sessions that push your current speed limits beyond what you thought possible.","The professional typist understands that rhythm and consistency matter more than raw speed during long typing sessions that require sustained concentration.","Advanced typing encompasses not just speed but also precision ergonomics and the ability to sustain peak performance over extended periods without fatigue."],
+  code:["const fetchData = async (url) => { const res = await fetch(url); return res.json(); };","function fibonacci(n) { return n <= 1 ? n : fibonacci(n - 1) + fibonacci(n - 2); }","import { useState, useEffect } from 'react'; export default function App() { return null; }"]
+};
+ 
+const LESSONS=[
+  {id:1,title:"Home Row Keys",level:"Beginner",keys:"ASDF JKL;",xp:50,icon:"⌨️",color:"#00ff88",locked:false},
+  {id:2,title:"Upper Row",level:"Beginner",keys:"QWERTY UI OP",xp:75,icon:"🔤",color:"#00f5ff",locked:false},
+  {id:3,title:"Lower Row",level:"Beginner",keys:"ZXCVBNM",xp:75,icon:"📝",color:"#7c3aed",locked:false},
+  {id:4,title:"Punctuation",level:"Intermediate",keys:".,!?;:'\"",xp:100,icon:"🎯",color:"#ffd700",locked:false},
+  {id:5,title:"Speed Drills",level:"Intermediate",keys:"Mixed Words",xp:150,icon:"⚡",color:"#ff6b35",locked:false},
+  {id:6,title:"Code Typing",level:"Advanced",keys:"{}[]<>()=+",xp:200,icon:"💻",color:"#ff4466",locked:true},
+  {id:7,title:"Blind Typing",level:"Pro",keys:"No Keyboard View",xp:300,icon:"🕶️",color:"#a855f7",locked:true},
+  {id:8,title:"Speed Master",level:"Legend",keys:"100+ WPM Target",xp:500,icon:"🏆",color:"#ffd700",locked:true},
+];
+ 
+const LEADERBOARD=[
+  {rank:1,name:"KeyboardKing99",wpm:147,acc:99.2,badge:"Legend",country:"🇺🇸"},
+  {rank:2,name:"SwiftFingers",wpm:138,acc:98.7,badge:"Master",country:"🇬🇧"},
+  {rank:3,name:"TypestormXL",wpm:131,acc:97.9,badge:"Master",country:"🇩🇪"},
+  {rank:4,name:"NeuralTypist",wpm:124,acc:98.1,badge:"Expert",country:"🇯🇵"},
+  {rank:5,name:"QuantumKeys",wpm:118,acc:96.8,badge:"Expert",country:"🇨🇦"},
+  {rank:6,name:"RapidStrike",wpm:112,acc:97.3,badge:"Expert",country:"🇦🇺"},
+  {rank:7,name:"ByteBlaster",wpm:105,acc:95.4,badge:"Pro",country:"🇮🇳"},
+  {rank:8,name:"CypherTyper",wpm:98,acc:96.1,badge:"Pro",country:"🇧🇷"},
+  {rank:9,name:"You",wpm:72,acc:94.3,badge:"Intermediate",country:"🎮",me:true},
+  {rank:10,name:"SpeedDemon42",wpm:68,acc:93.8,badge:"Intermediate",country:"🇫🇷"},
+];
+ 
+const BADGES=[
+  {name:"First Step",icon:"🌱",desc:"Complete your first test",earned:true},
+  {name:"Speed Demon",icon:"⚡",desc:"Reach 60 WPM",earned:true},
+  {name:"Accuracy King",icon:"🎯",desc:"100% accuracy test",earned:true},
+  {name:"Streak Master",icon:"🔥",desc:"7-day streak",earned:false},
+  {name:"Century Club",icon:"💯",desc:"Reach 100 WPM",earned:false},
+  {name:"Legend",icon:"👑",desc:"Reach 130+ WPM",earned:false},
+];
+ 
+const WEEK=[
+  {day:"Mon",wpm:58},{day:"Tue",wpm:63},{day:"Wed",wpm:61},
+  {day:"Thu",wpm:68},{day:"Fri",wpm:72},{day:"Sat",wpm:75},{day:"Sun",wpm:72}
+];
+ 
+const HOME_ROW=["A","S","D","F","J","K","L",";"];
+const KBD_ROWS=[["Q","W","E","R","T","Y","U","I","O","P"],["A","S","D","F","G","H","J","K","L",";"],["Z","X","C","V","B","N","M",",",".","/"]];
+ 
+const BADGE_COLORS={
+  Legend:{bg:"rgba(255,215,0,0.13)",color:"#ffd700",border:"rgba(255,215,0,0.38)"},
+  Master:{bg:"rgba(0,245,255,0.09)",color:"#00f5ff",border:"rgba(0,245,255,0.28)"},
+  Expert:{bg:"rgba(124,58,237,0.13)",color:"#a78bfa",border:"rgba(124,58,237,0.38)"},
+  Pro:{bg:"rgba(0,255,136,0.09)",color:"#00ff88",border:"rgba(0,255,136,0.28)"},
+  Intermediate:{bg:"rgba(74,96,112,0.18)",color:"#7a9bb5",border:"rgba(74,96,112,0.38)"},
+};
+ 
+// ─── PAGE NAVIGATION ────────────────────────────────────────────────
+function showPage(id, btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(btn) btn.classList.add('active');
+}
+ 
+// ─── HOME DEMO ANIMATION ────────────────────────────────────────────
+const demoStr="The quick brown fox jumps over the lazy dog — mastery takes practice!";
+let demoIdx=0,demoDir=1;
+function runDemo(){
+  const el=document.getElementById('demo-text');
+  if(!el)return;
+  let html='';
+  for(let i=0;i<demoStr.length;i++){
+    const ch=demoStr[i]==' '?'&nbsp;':demoStr[i];
+    if(i<demoIdx) html+=`<span style="color:var(--green)">${ch}</span>`;
+    else if(i===demoIdx) html+=`<span style="color:var(--white);border-bottom:2px solid var(--neon);animation:blink .8s step-end infinite">${ch}</span>`;
+    else html+=`<span style="color:var(--muted)">${ch}</span>`;
+  }
+  el.innerHTML=html;
+  demoIdx+=demoDir;
+  if(demoIdx>demoStr.length){demoDir=-1;demoIdx=demoStr.length;}
+  if(demoIdx<0){demoDir=1;demoIdx=0;}
+}
+setInterval(runDemo,80);
+ 
+// ─── TYPING TEST ─────────────────────────────────────────────────────
+let testMode='beginner',testDuration=30,testText='',testInput='',testStarted=false,testFinished=false;
+let timeLeft=30,wpm=0,accuracy=100,timerRef=null,startTime=null,activeKey='',errKeys=[];
+ 
+function randText(m){ const a=TEXTS[m]||TEXTS.intermediate; return a[Math.floor(Math.random()*a.length)]; }
+ 
+function renderText(){
+  const el=document.getElementById('type-display');
+  if(!el)return;
+  let html='';
+  for(let i=0;i<testText.length;i++){
+    const ch=testText[i]===' '?'&nbsp;':testText[i];
+    let cls='c-pending';
+    if(i<testInput.length) cls=testInput[i]===testText[i]?'c-correct':'c-wrong';
+    else if(i===testInput.length) cls='c-cursor';
+    html+=`<span class="${cls}">${ch}</span>`;
+  }
+  el.innerHTML=html;
+}
+ 
+function updateStats(){
+  const secs=startTime?(Date.now()-startTime)/1000:0;
+  const correct=[...testInput].filter((c,i)=>c===testText[i]).length;
+  wpm=secs>0?Math.round((correct/5)/(secs/60)):0;
+  accuracy=testInput.length>0?Math.round((correct/testInput.length)*100):100;
+  const pct=testText.length>0?(testInput.length/testText.length)*100:0;
+ 
+  document.getElementById('t-wpm').innerHTML=`<span style="color:${wpm>80?'var(--green)':'var(--neon)'}">${wpm}</span>`;
+  document.getElementById('t-acc').innerHTML=`${accuracy}<span style="font-size:.85rem;color:var(--muted)">%</span>`;
+  document.getElementById('t-prog').innerHTML=`${Math.round(pct)}<span style="font-size:.85rem;color:var(--muted)">%</span>`;
+  document.getElementById('char-bar').style.width=pct+'%';
+}
+ 
+function finishTest(){
+  clearInterval(timerRef);
+  testFinished=true;
+  const r=document.getElementById('result-panel');
+  const card=document.getElementById('typing-card');
+  card.style.display='none';
+  r.style.display='block';
+  document.getElementById('r-wpm').textContent=wpm;
+  document.getElementById('r-acc').textContent=accuracy+'%';
+  document.getElementById('r-xp').textContent='+'+Math.round(wpm*2);
+  document.getElementById('r-emoji').textContent=wpm>=100?'🏆':wpm>=60?'⚡':'💪';
+}
+ 
+function resetTest(){
+  clearInterval(timerRef);
+  testInput='';testStarted=false;testFinished=false;
+  timeLeft=testDuration;wpm=0;accuracy=100;startTime=null;errKeys=[];
+  testText=randText(testMode);
+  document.getElementById('t-wpm').textContent='0';
+  document.getElementById('t-acc').innerHTML='100<span style="font-size:.85rem;color:var(--muted)">%</span>';
+  document.getElementById('t-time').innerHTML=testDuration+'<span style="font-size:.85rem;color:var(--muted)">s</span>';
+  document.getElementById('t-prog').innerHTML='0<span style="font-size:.85rem;color:var(--muted)">%</span>';
+  document.getElementById('timer-bar').style.width='100%';
+  document.getElementById('timer-bar').style.background='linear-gradient(90deg,var(--neon),var(--green))';
+  document.getElementById('char-bar').style.width='0%';
+  document.getElementById('ta-overlay').classList.remove('hidden');
+  document.getElementById('result-panel').style.display='none';
+  document.getElementById('typing-card').style.display='block';
+  document.getElementById('hidden-input').value='';
+  renderText();renderKbd();
+}
+ 
+function setMode(m,btn){
+  testMode=m;
+  document.querySelectorAll('#mode-pills .mode-pill').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  resetTest();
+}
+ 
+function setDuration(d,btn){
+  testDuration=d;timeLeft=d;
+  document.querySelectorAll('#time-pills .mode-pill').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  resetTest();
+}
+ 
+function renderKbd(){
+  const c=document.getElementById('kbd-rows');
+  if(!c)return;
+  c.innerHTML='';
+  KBD_ROWS.forEach((row,ri)=>{
+    const rowEl=document.createElement('div');
+    rowEl.className='kbd-row';
+    rowEl.style.marginLeft=ri===1?'10px':ri===2?'20px':'0';
+    row.forEach(k=>{
+      const kEl=document.createElement('div');
+      kEl.className='key'+(HOME_ROW.includes(k)?' home':'')+(k===activeKey?' active-key':'')+(errKeys.includes(k)?' err-key':'');
+      kEl.id='key-'+k;
+      kEl.textContent=k;
+      rowEl.appendChild(kEl);
+    });
+    c.appendChild(rowEl);
+  });
+}
+ 
+// Init hidden input
+document.addEventListener('DOMContentLoaded',()=>{
+  testText=randText(testMode);
+  renderText();renderKbd();
+ 
+  const inp=document.getElementById('hidden-input');
+ 
+  inp.addEventListener('keydown',e=>{
+    const k=e.key.toUpperCase();
+    activeKey=k;
+    renderKbd();
+    setTimeout(()=>{activeKey='';renderKbd();},160);
+ 
+    if(!testStarted && e.key.length===1 && !testFinished){
+      testStarted=true;
+      startTime=Date.now();
+      document.getElementById('ta-overlay').classList.add('hidden');
+      timerRef=setInterval(()=>{
+        timeLeft--;
+        const tEl=document.getElementById('t-time');
+        if(tEl) tEl.innerHTML=timeLeft+'<span style="font-size:.85rem;color:var(--muted)">s</span>';
+        const pct=(timeLeft/testDuration)*100;
+        const bar=document.getElementById('timer-bar');
+        if(bar){
+          bar.style.width=pct+'%';
+          bar.style.background=timeLeft<10?'var(--red)':'linear-gradient(90deg,var(--neon),var(--green))';
+        }
+        if(timeLeft<=0) finishTest();
+      },1000);
+    }
+  });
+ 
+  inp.addEventListener('input',e=>{
+    if(testFinished)return;
+    const val=inp.value;
+    if(val.length>testText.length){inp.value=testInput;return;}
+    const last=val[val.length-1];
+    const expected=testText[val.length-1];
+    if(last && last!==expected){
+      const card=document.getElementById('typing-card');
+      card.classList.add('shake');
+      setTimeout(()=>card.classList.remove('shake'),320);
+      const ek=expected?.toUpperCase();
+      if(ek){ errKeys=[...new Set([...errKeys,ek])]; renderKbd(); setTimeout(()=>{errKeys=[];renderKbd();},2000); }
+    }
+    testInput=val;
+    renderText();updateStats();
+    if(val.length>=testText.length) finishTest();
+  });
+ 
+  inp.addEventListener('focus',()=>{
+    document.getElementById('typing-card').classList.add('active');
+  });
+ 
+  // Build lessons grid
+  const lg=document.getElementById('lessons-grid');
+  if(lg){
+    LESSONS.forEach(l=>{
+      const bc=BADGE_COLORS[l.level]||BADGE_COLORS.Intermediate;
+      const el=document.createElement('div');
+      el.className='card lesson-card'+(l.locked?' locked':'');
+      el.innerHTML=`
+        <div class="lc-top">
+          <div class="lc-icon">${l.icon}</div>
+          ${l.locked
+            ?`<span class="badge" style="background:rgba(74,96,112,.2);color:var(--muted);border:1px solid var(--border)">🔒 LOCKED</span>`
+            :`<span class="badge" style="background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.2)">+${l.xp} XP</span>`
+          }
+        </div>
+        <div class="lc-title">${l.title}</div>
+        <div class="lc-keys">Keys: ${l.keys}</div>
+        <div class="lc-bottom">
+          <span class="badge" style="background:${bc.bg};color:${bc.color};border:1px solid ${bc.border}">${l.level}</span>
+          ${!l.locked?`<button class="btn btn-primary" style="padding:6px 18px;font-size:.78rem;border-radius:6px" onclick="showPage('test',document.querySelectorAll('.nav-btn')[1])">Start →</button>`:''}
+        </div>
+      `;
+      lg.appendChild(el);
+    });
+  }
+ 
+  // Build week chart
+  const wc=document.getElementById('week-chart');
+  if(wc){
+    const max=Math.max(...WEEK.map(d=>d.wpm));
+    WEEK.forEach((d,i)=>{
+      const h=Math.round((d.wpm/max)*80);
+      wc.innerHTML+=`<div class="bar-col"><div class="bar" data-v="${d.wpm}" style="height:${h}px;animation-delay:${i*.1}s"></div><div class="bar-lbl">${d.day}</div></div>`;
+    });
+  }
+ 
+  // Build badge grid
+  const bg=document.getElementById('badge-grid');
+  if(bg){
+    BADGES.forEach(b=>{
+      bg.innerHTML+=`<div class="badge-item ${b.earned?'earned':'locked-b'}"><div class="bi-icon">${b.icon}</div><div class="bi-name">${b.name}</div></div>`;
+    });
+  }
+ 
+  // Build heatmap
+  const hm=document.getElementById('heatmap');
+  if(hm){
+    [["B",34],["P",28],["Q",22],["Z",19],["X",15]].forEach(([k,v])=>{
+      hm.innerHTML+=`<div class="hmap-row"><div class="hmap-key">${k}</div><div class="hmap-track"><div class="hmap-fill" style="width:${v}%;background:rgba(255,68,102,${v/50})"></div></div><div class="hmap-pct">${v}%</div></div>`;
+    });
+  }
+ 
+  // Build sessions
+  const sl=document.getElementById('sessions-list');
+  if(sl){
+    [
+      {date:"Today 14:32",mode:"Intermediate",wpm:72,acc:96,time:"30s"},
+      {date:"Today 10:15",mode:"Code",wpm:58,acc:94,time:"60s"},
+      {date:"Yesterday",mode:"Advanced",wpm:68,acc:97,time:"30s"},
+      {date:"2 days ago",mode:"Beginner",wpm:61,acc:99,time:"15s"},
+    ].forEach((s,i)=>{
+      const bc=BADGE_COLORS.Intermediate;
+      sl.innerHTML+=`<div class="session-row"><span class="sr-date">${s.date}</span><span class="badge" style="background:rgba(124,58,237,.1);color:#a78bfa;border:1px solid rgba(124,58,237,.2)">${s.mode}</span><div class="sr-stats"><span class="sr-wpm">${s.wpm} WPM</span><span class="sr-acc">${s.acc}%</span><span class="sr-time">${s.time}</span></div></div>`;
+    });
+  }
+ 
+  // Leaderboard podium
+  const podium=document.getElementById('podium');
+  if(podium){
+    const order=[LEADERBOARD[1],LEADERBOARD[0],LEADERBOARD[2]];
+    const medals=["🥈","🥇","🥉"];
+    const heights=["130px","160px","110px"];
+    const podColors=["var(--border)","rgba(255,215,0,0.28)","var(--border)"];
+    const valColors=["var(--neon)","var(--yellow)","var(--neon)"];
+    order.forEach((u,pi)=>{
+      podium.innerHTML+=`<div class="card podium-card" style="height:${heights[pi]};border-color:${podColors[pi]};background:${pi===1?'linear-gradient(135deg,rgba(255,215,0,0.07),rgba(0,245,255,0.03))':'var(--panel)'}"><div class="podium-medal">${medals[pi]}</div><div class="podium-name">${u.name}</div><div class="podium-wpm" style="color:${valColors[pi]}">${u.wpm}</div><div class="podium-sub">WPM</div></div>`;
+    });
+  }
+ 
+  // Leaderboard list
+  const lbl=document.getElementById('lb-list');
+  if(lbl){
+    LEADERBOARD.forEach(u=>{
+      const bc=BADGE_COLORS[u.badge]||BADGE_COLORS.Intermediate;
+      lbl.innerHTML+=`<div class="lb-row${u.me?' me':''}"><div class="lb-rank" style="color:${u.rank<=3?'var(--yellow)':'var(--muted)'}">#${u.rank}</div><div class="lb-country">${u.country}</div><div class="lb-name" style="color:${u.me?'var(--neon)':'var(--white)'}">${u.name}${u.me?' <span style="font-size:.7rem;color:var(--muted)">(you)</span>':''}</div><span class="badge" style="background:${bc.bg};color:${bc.color};border:1px solid ${bc.border}">${u.badge}</span><div class="lb-wpm">${u.wpm}</div><div class="lb-acc">${u.acc}%</div></div>`;
+    });
+  }
+ 
+  // Profile stats
+  const ps=document.getElementById('profile-stats');
+  if(ps){
+    [
+      ["Best WPM","92","var(--neon)"],
+      ["Average WPM","71","var(--text)"],
+      ["Best Accuracy","100%","var(--green)"],
+      ["Total Tests","47","var(--yellow)"],
+      ["Total Time","4h 32m","var(--neon2)"],
+      ["Words Typed","28,492","var(--text)"],
+    ].forEach(([l,v,c])=>{
+      ps.innerHTML+=`<div class="pstat-row"><span class="pstat-lbl">${l}</span><span class="pstat-val" style="color:${c}">${v}</span></div>`;
+    });
+  }
+ 
+  // Profile badges
+  const pb=document.getElementById('profile-badges');
+  if(pb){
+    BADGES.forEach(b=>{
+      pb.innerHTML+=`<div class="pbadge-item ${b.earned?'earned':'locked-b'}"><div class="pbadge-icon">${b.icon}</div><div><div class="pbadge-name">${b.name}</div><div class="pbadge-desc">${b.desc}</div></div>${b.earned?'<div class="pbadge-check">✓</div>':''}</div>`;
+    });
+  }
+});
+</script>
+</body>
+</html>
